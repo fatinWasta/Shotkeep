@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 @main
 struct ShotKeepApp: App {
@@ -30,13 +31,17 @@ struct ShotKeepApp: App {
     }
     
     var body: some Scene {
-        MenuBarExtra {
-            ShotKeepView(viewModel: viewModel)
-        } label: {
-            Image("MenuBarIcon")
+        WindowGroup {
+            //ShotKeepView(viewModel: viewModel)
+            DashboardView()
         }
-        .menuBarExtraStyle(.window)
+        
+        Settings {
+            SettingsView()
+        }
     }
+    
+    
     
     
 }

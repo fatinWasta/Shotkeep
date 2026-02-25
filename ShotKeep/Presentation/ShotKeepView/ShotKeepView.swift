@@ -8,6 +8,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import Combine
+import AppKit
 
 enum Summery: String, CaseIterable {
     case week
@@ -19,7 +20,8 @@ struct ShotKeepView: View {
     @State private var showImporter = false
     
     @StateObject private var viewModel: ShotKeepViewModel
-    
+    let menuViewWidth: CGFloat = 500
+
     init(viewModel: ShotKeepViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -27,19 +29,33 @@ struct ShotKeepView: View {
     var body: some View {
         VStack {
             
-            Text("Screenshots To organise: \(viewModel.screenshots.count)")
+            Text("Screenshots To organise: \(viewModel.sourceScreenshots.count)")
             
             VStack {
-                Button("Choose Folder") {
-                    viewModel.chooseSourceFolder()
+                    Text("Source:\(viewModel.getSourceDirectoryPath())")
+                    
+                    
+                    Button("Choose Folder to read SS") {
+                        viewModel.chooseSourceFolder()
+                    }
+                
+                
+                Button("Choose Folder for shotkeep SS") {
+                    viewModel.chooseDestinationFolder()
                 }
                 
                 Button( action: {
-                    
+                    viewModel.moveAllScreenshots(to: viewModel.destinationDirectory)
                 }) {
                     Text("Move Screenshots")
                 }
-                .help("Quit")
+                
+                SettingsLink {
+                    Label("Settings", systemImage: "gearshape")
+                }   
+                
+
+                
             }
             
             
@@ -51,6 +67,7 @@ struct ShotKeepView: View {
             .help("Quit")
             
         }
+        .frame(width: menuViewWidth)
         .padding()
     }
     

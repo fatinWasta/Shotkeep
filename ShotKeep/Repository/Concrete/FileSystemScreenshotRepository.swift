@@ -1,9 +1,9 @@
-//
-//  FileSystemScreenshotRepository.swift
-//  ShotKeep
-//
-//  Created by Fatin on 22/02/26.
-//
+    //
+    //  FileSystemScreenshotRepository.swift
+    //  ShotKeep
+    //
+    //  Created by Fatin on 22/02/26.
+    //
 
 import Foundation
 
@@ -41,16 +41,38 @@ final class FileSystemScreenshotRepository: ScreenshotRepository {
               from source: URL,
               to destination: URL) throws {
         
-        if !fileManager.fileExists(atPath: source.path) == false {
-            try fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
+        let didAccessSource = source.startAccessingSecurityScopedResource()
+        let didAccessDestination = destination.startAccessingSecurityScopedResource()
+        
+        defer {
+            if didAccessSource { source.stopAccessingSecurityScopedResource() }
+            if didAccessDestination { destination.stopAccessingSecurityScopedResource() }
+        }
+        
+        let shotkeepURL: URL
+        if destination.lastPathComponent == "ShotKeep" {
+            shotkeepURL = destination
+        } else {
+            shotkeepURL = destination.appendingPathComponent("ShotKeep", isDirectory: true)
+        }
+        if !fileManager.fileExists(atPath: shotkeepURL.path) {
+            try fileManager.createDirectory(
+                at: shotkeepURL,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
         }
         
         for screenshot in screenshots {
-            let destURL = destination.appendingPathComponent(screenshot.url.lastPathComponent)
+            let destURL = shotkeepURL.appendingPathComponent(
+                screenshot.url.lastPathComponent
+            )
             
-            try? fileManager.removeItem(at: destURL)
+            if fileManager.fileExists(atPath: destURL.path) {
+                try fileManager.removeItem(at: destURL)
+            }
+            
             try fileManager.moveItem(at: screenshot.url, to: destURL)
-            
         }
         
     }
