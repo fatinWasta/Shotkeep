@@ -12,7 +12,8 @@ import AppKit
 struct ShotKeepApp: App {
     
     private let viewModel: ShotKeepViewModel
-    
+    @StateObject private var coordinator = NavigationCoordinator()
+
     init() {
         
         let repository = FileSystemScreenshotRepository()
@@ -33,12 +34,11 @@ struct ShotKeepApp: App {
     var body: some Scene {
         WindowGroup {
             //ShotKeepView(viewModel: viewModel)
-            DashboardView()
+            RootView()
+                .environmentObject(coordinator)
         }
         
-        Settings {
-            SettingsView()
-        }
+
     }
     
     

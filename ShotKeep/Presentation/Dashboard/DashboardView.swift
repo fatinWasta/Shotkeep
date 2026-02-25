@@ -30,6 +30,9 @@ struct DashboardView : View {
             
             SummeryView()
             
+            Divider()
+                .padding([.leading, .trailing])
+            
             BottomView()
             
             Spacer()
@@ -47,13 +50,20 @@ struct DashboardView : View {
 struct BottomView: View {
     var body: some View {
         HStack {
-            Text("Last Organised")
+            Text("Last Organised,")
                 .font(.system(.subheadline,
                               weight: .medium))
-            Spacer()
             Text("2hrs ago")
                 .font(.system(.subheadline,
                               weight: .medium))
+            
+            Spacer()
+            Button(action: {
+                NSApplication.shared.terminate(nil)
+            }) {
+                Image(systemName: "xmark.circle")
+            }
+            .help("Quit")
         }
         .padding()
     }
@@ -130,9 +140,7 @@ struct StatusView: View {
 
 
 struct TitleView: View {
-    @State private var isHovered = false
-    
-    
+    @EnvironmentObject private var coordinator: NavigationCoordinator
     var body: some View {
         HStack {
             VStack (alignment: .leading) {
@@ -149,7 +157,9 @@ struct TitleView: View {
             .padding()
             
             Spacer()
-            Button(action: {}) {
+            Button(action: {
+                coordinator.push(.settings)
+            }) {
                 Image(systemName: "gearshape")
                     .font(.largeTitle)
                     .foregroundColor(.white)

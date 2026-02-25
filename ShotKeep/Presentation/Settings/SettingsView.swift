@@ -9,10 +9,16 @@
 import SwiftUI
 
 struct SettingsView : View {
+    @EnvironmentObject private var coordinator: NavigationCoordinator
+
     var body: some View {
         VStack {
-            Text("Settings View")
-
+            HStack {
+                Button("Back") {
+                    coordinator.pop()
+                }
+                Text("Settings View")
+            }
         }
         .frame(width: 400, height: 500)
     }
