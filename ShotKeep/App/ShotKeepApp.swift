@@ -36,7 +36,9 @@ struct ShotKeepApp: App {
             //ShotKeepView(viewModel: viewModel)
             RootView()
                 .environmentObject(coordinator)
+
         }
+        .windowResizability(.contentSize)
         
 
     }

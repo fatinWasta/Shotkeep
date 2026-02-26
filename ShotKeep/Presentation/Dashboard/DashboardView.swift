@@ -35,11 +35,12 @@ struct DashboardView : View {
             Divider()
                 .padding([.leading, .trailing])
             
-            BottomView()
+            LastRunView()
             
             Spacer()
         }
-        .frame(minWidth: 300)
+        .frame(width: 500, height: 600)
+       
     }
     
 }
@@ -49,7 +50,7 @@ struct DashboardView : View {
 }
 
 
-struct BottomView: View {
+struct LastRunView: View {
     var body: some View {
         HStack {
             Text("Last Organised,")

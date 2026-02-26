@@ -15,14 +15,38 @@ struct SKButton: View {
     
     let title: String
     let image: Image?
+    let width: CGFloat?
+    let height: CGFloat?
+    var backgroundColor: Color
+    var titleColor: Color
+    var isEnabled: Bool
+    var cornerRadius: CGFloat
+    
     let action: () -> Void
-    
-    var backgroundColor: Color = Color(.blue)
-    var titleColor: Color = .primary
-    var isEnabled: Bool = true
-    var cornerRadius: CGFloat = 8
-    
+
     // MARK: - Body
+    
+    init(
+        title: String,
+        image: Image? = nil,
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
+        backgroundColor: Color = Color(.blue),
+        titleColor: Color = .primary,
+        isEnabled: Bool = true,
+        cornerRadius: CGFloat = 8,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.image = image
+        self.width = width
+        self.height = height
+        self.backgroundColor = backgroundColor
+        self.titleColor = titleColor
+        self.isEnabled = isEnabled
+        self.cornerRadius = cornerRadius
+        self.action = action
+    }
     
     var body: some View {
         Button(action: action) {
@@ -39,6 +63,7 @@ struct SKButton: View {
             .frame(maxWidth: .infinity, maxHeight: 40)
             .padding(.vertical, 8)
         }
+        .frame(width: width, height: height)
         .buttonStyle(.plain)
         .background(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -51,7 +76,9 @@ struct SKButton: View {
 
 #Preview {
     SKButton(title: "Tap Me",
-             image:Image(systemName: "folder")) {
+             image: Image(systemName: "folder"),
+             width: 200,
+             height: 40) {
         debugPrint("Tapped")
     }
 }

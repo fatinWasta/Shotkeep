@@ -39,7 +39,6 @@ struct ShotKeepView: View {
                         viewModel.chooseSourceFolder()
                     }
                 
-                
                 Button("Choose Folder for shotkeep SS") {
                     viewModel.chooseDestinationFolder()
                 }
@@ -53,9 +52,6 @@ struct ShotKeepView: View {
                 SettingsLink {
                     Label("Settings", systemImage: "gearshape")
                 }   
-                
-
-                
             }
             
             
