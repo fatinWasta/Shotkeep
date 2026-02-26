@@ -13,14 +13,26 @@ struct SettingsView : View {
 
     var body: some View {
         VStack {
-            HStack {
-                Button("Back") {
-                    coordinator.pop()
-                }
-                Text("Settings View")
+            TitleView(title: "Settings",
+                      subTitle: "Configure file locations",
+                      leadingImageName: "arrow.left")
+            
+            Divider()
+                .padding([.leading, .trailing])
+            
+            CardView(backgroundColor: .gray) {
+                
             }
+            
+           Spacer()
         }
         .frame(width: 400, height: 500)
     }
     
 }
+
+#Preview {
+    SettingsView()
+        .environmentObject(NavigationCoordinator())
+}
+

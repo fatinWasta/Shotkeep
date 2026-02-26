@@ -12,7 +12,9 @@ struct DashboardView : View {
     
     var body: some View {
         VStack {
-            TitleView()
+            TitleView(title: "Shotkeep",
+                      subTitle: "To keep your screenshots organized",
+                      trailingImageName: "gearshape")
             Divider()
                 .padding([.leading, .trailing])
             
@@ -140,16 +142,35 @@ struct StatusView: View {
 
 
 struct TitleView: View {
+    
     @EnvironmentObject private var coordinator: NavigationCoordinator
+    
+    var title: String
+    var subTitle: String
+    var leadingImageName: String?
+    var trailingImageName: String?
+    
     var body: some View {
         HStack {
+       
+            if let leadingImageName, !leadingImageName.isEmpty {
+                Button(action: {
+                    coordinator.pop()
+                }) {
+                    Image(systemName: leadingImageName)
+                        .font(.largeTitle)
+                        .foregroundColor(.white)
+                }
+                .padding([.leading])
+            }
+                        
             VStack (alignment: .leading) {
-                Text("ShotKeep")
+                Text(title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                 
-                Text("To keep your screenshots organized")
+                Text(subTitle)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -157,17 +178,25 @@ struct TitleView: View {
             .padding()
             
             Spacer()
-            Button(action: {
-                coordinator.push(.settings)
-            }) {
-                Image(systemName: "gearshape")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
+            
+            if let trailingImageName, !trailingImageName.isEmpty {
+                Button(action: {
+                    coordinator.push(.settings)
+                }) {
+                    Image(systemName: trailingImageName)
+                        .font(.largeTitle)
+                        .foregroundColor(.white)
+                }
+                .padding([.trailing])
             }
-            .padding()
+            
             
         }
         
     }
+}
+
+#Preview {
+    TitleView(title: "Settings", subTitle: "Configure file locations")
 }
 
