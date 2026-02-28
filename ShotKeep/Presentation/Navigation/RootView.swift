@@ -15,11 +15,29 @@ enum AppRoute: Hashable {
 struct RootView: View {
     
     @EnvironmentObject private var coordinator: NavigationCoordinator
+    private let viewModel: DashboardViewModel
+    
+    init() {
+        
+        let repository = FileSystemScreenshotRepository()
+        
+        let fetchUseCase = FetchScreenshotUseCase(repository: repository)
+        let moveUseCase = MoveAllScreenshotUseCase(repository: repository)
+        
+        let watcher = DispatchSourceScreenshotWatcher()
+        
+        viewModel = DashboardViewModel(
+            fetchUseCase: fetchUseCase,
+            moveAllSSUseCase: moveUseCase,
+            watcher: watcher
+        )
+        viewModel.restoreSourceFolderIfAvailable()
+    }
     
     var body: some View {
         NavigationStack(path: $coordinator.path) {
             
-            DashboardView()
+            DashboardView(viewModel: viewModel)
                 .environmentObject(coordinator)
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {

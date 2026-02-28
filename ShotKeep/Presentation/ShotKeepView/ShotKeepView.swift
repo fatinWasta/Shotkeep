@@ -19,12 +19,9 @@ struct ShotKeepView: View {
     @State private var isExpanded = false
     @State private var showImporter = false
     
-    @StateObject private var viewModel: ShotKeepViewModel
+    @ObservedObject private var viewModel: ShotKeepViewModel
+    
     let menuViewWidth: CGFloat = 500
-
-    init(viewModel: ShotKeepViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
     
     var body: some View {
         VStack {

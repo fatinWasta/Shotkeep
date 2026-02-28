@@ -10,6 +10,8 @@ import SwiftUI
 struct DashboardView : View {
     @State private var isOn = false
     
+    @ObservedObject var viewModel: DashboardViewModel
+    
     var body: some View {
         VStack {
             TitleView(title: "Shotkeep",
@@ -18,8 +20,10 @@ struct DashboardView : View {
             Divider()
                 .padding([.leading, .trailing])
             
-            StatusView(isOn: $isOn,
-                       onToggle: { /* handle toggle change */ })
+            StatusView(isOn: $viewModel.isMonitoringEnabled,
+                       statusColor: viewModel.monitoringStatusColor,
+                       status: viewModel.monitoringStatusText,
+                       description: viewModel.monitoringDescription)
             
             SKButton(title: "Organize Now",
                      image: nil) {
@@ -45,9 +49,9 @@ struct DashboardView : View {
     
 }
 
-#Preview {
-    DashboardView()
-}
+//#Preview {
+//    DashboardView()
+//}
 
 
 struct LastRunView: View {
@@ -111,18 +115,23 @@ struct SummeryView: View {
 
 struct StatusView: View {
     @Binding var isOn: Bool
-    var onToggle: () -> Void
+    //var onToggle: () -> Void
+    var statusColor: Color
+    var status: String
+    var description: String
     
     var body: some View {
-        CardView(backgroundColor: .red) {
+        CardView(backgroundColor: .statusCard) {
             HStack() {
                 Circle()
+                    .fill(statusColor)
                     .frame(width: 10, height: 10)
+                
                 VStack(alignment: .leading) {
                     
-                    Text("Inactive")
+                    Text(status)
                         .font(.headline)
-                    Text("Auto-organize is disabled")
+                    Text(description)
                         .font(.subheadline)
                 }
                 
@@ -132,9 +141,9 @@ struct StatusView: View {
                     .tint(.red)
                     .labelsHidden()
                     .padding()
-                    .onChange(of: isOn) {
-                        onToggle()
-                    }
+//                    .onChange(of: isOn) {
+//                        onToggle()
+//                    }
             }
         }
         .padding()

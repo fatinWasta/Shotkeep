@@ -33,7 +33,6 @@ struct ShotKeepApp: App {
     
     var body: some Scene {
         WindowGroup {
-            //ShotKeepView(viewModel: viewModel)
             RootView()
                 .environmentObject(coordinator)
 
