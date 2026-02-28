@@ -49,11 +49,6 @@ struct DashboardView : View {
     
 }
 
-//#Preview {
-//    DashboardView()
-//}
-
-
 struct LastRunView: View {
     var body: some View {
         HStack {
@@ -76,7 +71,9 @@ struct LastRunView: View {
     }
 }
 
+//TODO: This needs to be updated once organizer logic is completed
 struct SummeryView: View {
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Summery")

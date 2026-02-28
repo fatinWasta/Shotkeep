@@ -12,6 +12,8 @@ struct FolderSelectionView: View {
     var subTitle: String
     var selectedFolderPath: String
     
+    let selectFolderAction: () -> Void
+
     var body: some View {
         CardView(backgroundColor: .gray) {
             VStack(alignment: .leading) {
@@ -38,7 +40,7 @@ struct FolderSelectionView: View {
                              width: 100,
                              height: 40
                     ) {
-                        //perform action here
+                        selectFolderAction()
                     }
                 }
 

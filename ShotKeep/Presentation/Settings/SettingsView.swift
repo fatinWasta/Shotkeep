@@ -10,6 +10,8 @@ import SwiftUI
 
 struct SettingsView : View {
     @EnvironmentObject private var coordinator: NavigationCoordinator
+    //@ObservedObject var viewModel: SettingsViewModel
+    @ObservedObject var config: AppConfigViewModel
     
     var body: some View {
         VStack {
@@ -23,48 +25,28 @@ struct SettingsView : View {
             
             FolderSelectionView(title: "Source Folder",
                                 subTitle: "Where to monitor for new screenshots?",
-                                selectedFolderPath: "~/Relative selected source path")
+                                selectedFolderPath: "~/\(config.sourceFolderDisplayName)") {
+                config.chooseSourceFolder()
+            }
             
             FolderSelectionView(title: "Destination Folder",
                                 subTitle: "Where to save organized creenshots?",
-                                selectedFolderPath: "~/Relative selected destination path")
+                                selectedFolderPath: "~/\(config.destinationFolderDisplayName)") {
+                config.chooseDestinationFolder()
+            }
             
             Divider()
                 .padding([.leading, .trailing])
             
             HowItWorksView()
+                .padding()
             
-            Divider()
-                .padding([.leading, .trailing])
-            
-            HStack {
-                SKButton(title: "Cancel",
-                         width: 180,
-                         height: 40,
-                         backgroundColor: .secondary
-                ) {
-                    //perform action here
-                }
-                
-                SKButton(title: "Save Changes",
-                         width: 180,
-                         height: 40
-                ) {
-                    //perform action here
-                }
-            }
-            .padding()
             
         }
-        //.frame(width: 500, height: 600)
     }
     
 }
 
-#Preview {
-    SettingsView()
-        .environmentObject(NavigationCoordinator())
-}
 
 struct HowItWorksView: View {
     let items: [String] = ["Screenshots are automatically detected from source folder",
@@ -72,7 +54,7 @@ struct HowItWorksView: View {
                            "Original files are safely moved (not copied)"]
     
     var body: some View {
-        VStack {
+        VStack(spacing: 5) {
             CardView(backgroundColor: .indigo) {
                 HStack {
                     VStack(alignment: .leading) {
@@ -92,7 +74,7 @@ struct HowItWorksView: View {
             }
             
         }
-        .padding()
+        .padding(.bottom, 20)
     }
 }
 

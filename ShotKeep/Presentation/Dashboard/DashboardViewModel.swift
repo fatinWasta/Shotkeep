@@ -11,6 +11,8 @@ import AppKit
 import SwiftUI
 
 final class DashboardViewModel: ObservableObject {
+    @ObservedObject var config: AppConfigViewModel
+    
     @Published var isMonitoringEnabled: Bool = false {
         didSet {
             handleMonitoringChange()
@@ -41,9 +43,11 @@ final class DashboardViewModel: ObservableObject {
     private let watcher: DispatchSourceScreenshotWatcher
     
     
-    init(fetchUseCase: FetchScreenshotUseCase,
+    init(config: AppConfigViewModel,
+         fetchUseCase: FetchScreenshotUseCase,
          moveAllSSUseCase: MoveAllScreenshotUseCase,
          watcher: DispatchSourceScreenshotWatcher) {
+        self.config = config
         self.fetchUseCase = fetchUseCase
         self.moveAllSSUseCase = moveAllSSUseCase
         self.watcher = watcher
@@ -116,108 +120,10 @@ final class DashboardViewModel: ObservableObject {
         }
     }
     
-    func chooseSourceFolder() {
-        if let url = chooseDirectory(
-            defaultURL: sourceDirectory,
-            prompt: "Select Screenshot Folder"
-        ) {
-            persistBookmark(for: bookmarkSourceUDKey, at: url)
-            setSourceDirectory(url)
-        }
-    }
     
-    func chooseDestinationFolder() {
-        if let url = chooseDirectory(
-            defaultURL: destinationDirectory,
-            prompt: "Select Destination Folder"
-        ) {
-            persistBookmark(for: bookmarkDestinationUDKey, at: url)
-            setDestinationDirectory(url)
-        }
-    }
-    
-    func restoreSourceFolderIfAvailable() {
-        guard let data = UserDefaults.standard.data(forKey: bookmarkSourceUDKey) else { return }
-        
-        var isStale = false
-        
-        do {
-            let url = try URL(
-                resolvingBookmarkData: data,
-                options: [.withSecurityScope],
-                relativeTo: nil,
-                bookmarkDataIsStale: &isStale
-            )
-            
-            setSourceDirectory(url)
-            
-        } catch {
-            debugPrint("Failed to restore bookmark:", error)
-        }
-    }
-    
-    
-}
-
-extension DashboardViewModel {
-    func getSourceDirectoryPath() -> String {
-        return sourceDirectory?.lastPathComponent ?? "Select a directory to read default screenshots from."
-    }
-}
-
-extension DashboardViewModel {
-    func setSourceDirectory(_ url: URL) {
-        debugPrint("User set directory: \(url)")
-        sourceDirectory = url
-        
-        startMonitoring(directory: url)
-        updateSourceScreenshots()
-    }
-    
-    func setDestinationDirectory(_ url: URL) {
-        debugPrint("User set directory: \(url)")
-        destinationDirectory = url
-        
-        //startMonitoring(directory: url)
-        //load()
-    }
 }
 
 private extension DashboardViewModel {
-    
-    private func chooseDirectory(
-        defaultURL: URL? = nil,
-        prompt: String
-    ) -> URL? {
-        
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = false
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-        panel.canCreateDirectories = true
-        panel.prompt = prompt
-        
-        if let defaultURL {
-            panel.directoryURL = defaultURL
-        }
-        
-        return panel.runModal() == .OK ? panel.url : nil
-    }
-    
-    func persistBookmark(for key:String, at url: URL) {
-        do {
-            let bookmark = try url.bookmarkData(
-                options: [.withSecurityScope],
-                includingResourceValuesForKeys: nil,
-                relativeTo: nil
-            )
-            
-            UserDefaults.standard.set(bookmark, forKey: key)
-            
-        } catch {
-            debugPrint("Failed to create bookmark:", error)
-        }
-    }
     
     func updateSourceScreenshots() {
         sourceScreenshots = self.loadScreenshots(at: self.sourceDirectory)
