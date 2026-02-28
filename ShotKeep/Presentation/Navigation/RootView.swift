@@ -27,6 +27,7 @@ struct RootView: View {
         let moveUseCase = MoveAllScreenshotUseCase(repository: repository)
         
         let watcher = DispatchSourceScreenshotWatcher()
+        let notificationService = SystemNotificationService()
         
         let config = AppConfigViewModel()
         
@@ -34,7 +35,8 @@ struct RootView: View {
             config: config,
             fetchUseCase: fetchUseCase,
             moveAllSSUseCase: moveUseCase,
-            watcher: watcher
+            watcher: watcher,
+            notificationService: notificationService
         )
         
         _configVM = StateObject(wrappedValue: config)

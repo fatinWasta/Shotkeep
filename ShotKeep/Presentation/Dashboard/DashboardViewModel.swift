@@ -26,6 +26,11 @@ final class DashboardViewModel: ObservableObject {
         }
     }
     
+    @Published private(set) var destinationScreenshots: [Screenshot] = []
+    @Published private(set) var sourceScreenshots: [Screenshot] = []
+    
+    private(set) var lastOrganizedAt: Date?
+    
     var monitoringStatusText: String {
         isMonitoringEnabled ? "Active" : "Inactive"
     }
@@ -38,39 +43,52 @@ final class DashboardViewModel: ObservableObject {
         isMonitoringEnabled ? Color.green : Color.gray
     }
     
+    var lastOrganizedText: String {
+        guard let date = lastOrganizedAt else { return "Never organized" }
+
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return "Last organized \(formatter.localizedString(for: date, relativeTo: Date()))"
+    }
+    
     private let bookmarkSourceUDKey = "shotkeep.source.bookmark"
     private let bookmarkDestinationUDKey = "shotkeep.destination.bookmark"
     
     private let fetchUseCase: FetchScreenshotUseCase
     private let moveAllSSUseCase: MoveAllScreenshotUseCase
     private let watcher: DispatchSourceScreenshotWatcher
-    
+    private let notificationService: NotificationService
     
     init(config: AppConfigViewModel,
          fetchUseCase: FetchScreenshotUseCase,
          moveAllSSUseCase: MoveAllScreenshotUseCase,
-         watcher: DispatchSourceScreenshotWatcher) {
+         watcher: DispatchSourceScreenshotWatcher,
+         notificationService: NotificationService) {
+        
+        
         self.config = config
         self.fetchUseCase = fetchUseCase
         self.moveAllSSUseCase = moveAllSSUseCase
         self.watcher = watcher
+        self.notificationService = notificationService
         
-        //sourceScreenshots = loadScreenshots(at: config.sourceDirectory)
+        startMonitoring(directory: config.sourceDirectory)
         isMonitoringEnabled = UserDefaults.standard.bool(forKey: StringConstants.isMonitoringEnabledUDkey)
-        if isMonitoringEnabled {
-           
-        }
+        refreshScreenshots()
+        lastOrganizedAt = UserDefaults.standard.object(forKey: StringConstants.lastOrganizedKey) as? Date
+
     }
     
     deinit {
-        watcher.stopWatching()
+        stopMonitoring()
     }
     
     
     func handleMonitoringChange() {
-        guard let sourceDirectory = config.sourceDirectory else { return }
         UserDefaults.standard.set(isMonitoringEnabled, forKey: StringConstants.isMonitoringEnabledUDkey)
-        isMonitoringEnabled ? startMonitoring(directory: sourceDirectory) : stopMonitoring()
+        if isMonitoringEnabled {
+            moveAllScreenshots()
+        }
     }
     
     func loadScreenshots(at directory: URL?) -> [Screenshot] {
@@ -110,6 +128,7 @@ final class DashboardViewModel: ObservableObject {
         }
         
         
+        
         let didAccessSource = source.startAccessingSecurityScopedResource()
         let didAccessDestination = destination.startAccessingSecurityScopedResource()
         
@@ -133,7 +152,9 @@ final class DashboardViewModel: ObservableObject {
             )
             return
         }
+        
         let sourceScreenshots = self.loadScreenshots(at: config.sourceDirectory)
+        if sourceScreenshots.isEmpty { return }
         do {
             try moveAllSSUseCase.execute(
                 sourceScreenshots,
@@ -141,11 +162,15 @@ final class DashboardViewModel: ObservableObject {
                 to: destination
             )
             
-            activeAlert = DashboardAlert(
-                title: "Your Screenshots Are Safe!",
-                message: "All screenshots were moved successfully to ~/\(config.destinationFolderDisplayName)."
+            notificationService.show(
+                title: "Screenshots Organized!",
+                message: "All screenshots moved to ~/\(config.destinationFolderDisplayName)."
             )
             
+
+            refreshScreenshots()
+            
+            setLastOrganizedDate()
             
         } catch {
             activeAlert = DashboardAlert(
@@ -156,27 +181,43 @@ final class DashboardViewModel: ObservableObject {
         }
     }
     
-    
 }
 
 private extension DashboardViewModel {
     
-//    func updateSourceScreenshots() {
-//        sourceScreenshots = self.loadScreenshots(at: config.sourceDirectory)
-//        debugPrint("Screenshot updated:\(sourceScreenshots.count)")
-//    }
+    func refreshScreenshots() {
+        destinationScreenshots = loadScreenshots(at: config.destinationDirectory)
+        sourceScreenshots = loadScreenshots(at: config.sourceDirectory)
+        if !isMonitoringEnabled {
+            notificationService.show(
+                title: "Screenshots are in Mess!",
+                message: "You just captured a screenshot, but it's yet to organized."
+            )
+        }
+        
+    }
     
-    func startMonitoring(directory: URL) {
+    func startMonitoring(directory: URL?) {
+        guard let directory else { return }
         debugPrint("Start Monitoring")
         watcher.startWatching(directory: directory) { [weak self] in
             guard let self else { return }
             debugPrint("watcher fired")
-            moveAllScreenshots()
+            if isMonitoringEnabled{
+                moveAllScreenshots()
+            }
+            refreshScreenshots()
         }
     }
     
-    private func stopMonitoring() {
+    func stopMonitoring() {
         debugPrint("Stop Monitoring")
         watcher.stopWatching()
+    }
+    
+    func setLastOrganizedDate() {
+        let now = Date()
+        lastOrganizedAt = now
+        UserDefaults.standard.set(now, forKey: StringConstants.lastOrganizedKey)
     }
 }

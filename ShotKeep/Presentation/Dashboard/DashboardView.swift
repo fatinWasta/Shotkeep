@@ -23,7 +23,8 @@ struct DashboardView : View {
             StatusView(isOn: $viewModel.isMonitoringEnabled,
                        statusColor: viewModel.monitoringStatusColor,
                        status: viewModel.monitoringStatusText,
-                       description: viewModel.monitoringDescription)
+                       description: viewModel.monitoringDescription,
+                       unOrganisedScreenshotsCount: viewModel.sourceScreenshots.count)
             
             SKButton(title: "Organize Now",
                      image: nil,
@@ -35,12 +36,12 @@ struct DashboardView : View {
             Divider()
                 .padding([.leading, .trailing])
             
-            SummeryView()
+            SummeryView(totalOrganised: viewModel.destinationScreenshots.count)
             
             Divider()
                 .padding([.leading, .trailing])
             
-            LastRunView()
+            LastRunView(atDate: viewModel.lastOrganizedText)
             
             Spacer()
         }
@@ -58,12 +59,13 @@ struct DashboardView : View {
 }
 
 struct LastRunView: View {
+    var atDate: String
     var body: some View {
         HStack {
             Text("Last Organised,")
                 .font(.system(.subheadline,
                               weight: .medium))
-            Text("2hrs ago")
+            Text("\(atDate)")
                 .font(.system(.subheadline,
                               weight: .medium))
             
@@ -81,6 +83,7 @@ struct LastRunView: View {
 
 //TODO: This needs to be updated once organizer logic is completed
 struct SummeryView: View {
+    var totalOrganised: Int
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -93,7 +96,7 @@ struct SummeryView: View {
                     VStack {
                         Text("Total Organized")
                         
-                        Text("1023")
+                        Text("\(totalOrganised)")
                             .font(.system(size: 40, weight: .bold))
                     }
                     
@@ -120,10 +123,10 @@ struct SummeryView: View {
 
 struct StatusView: View {
     @Binding var isOn: Bool
-    //var onToggle: () -> Void
     var statusColor: Color
     var status: String
     var description: String
+    var unOrganisedScreenshotsCount: Int
     
     var body: some View {
         CardView(backgroundColor: .statusCard) {
@@ -138,6 +141,11 @@ struct StatusView: View {
                         .font(.headline)
                     Text(description)
                         .font(.subheadline)
+                    
+                    if !isOn {
+                        Text("You currently have \(unOrganisedScreenshotsCount) unorganized screenshots.")
+                            .font(.subheadline)
+                    }
                 }
                 
                 Spacer()
@@ -146,9 +154,6 @@ struct StatusView: View {
                     .tint(.red)
                     .labelsHidden()
                     .padding()
-//                    .onChange(of: isOn) {
-//                        onToggle()
-//                    }
             }
         }
         .padding()

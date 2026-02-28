@@ -1,9 +1,9 @@
-    //
-    //  FileSystemScreenshotRepository.swift
-    //  ShotKeep
-    //
-    //  Created by Fatin on 22/02/26.
-    //
+//
+//  FileSystemScreenshotRepository.swift
+//  ShotKeep
+//
+//  Created by Fatin on 22/02/26.
+//
 
 import Foundation
 
