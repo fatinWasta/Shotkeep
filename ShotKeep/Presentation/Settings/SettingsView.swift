@@ -55,7 +55,7 @@ struct HowItWorksView: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            CardView(backgroundColor: .indigo) {
+            CardView(backgroundColor: .howItWorksCard) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("How it Works")

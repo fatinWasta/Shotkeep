@@ -26,8 +26,9 @@ struct DashboardView : View {
                        description: viewModel.monitoringDescription)
             
             SKButton(title: "Organize Now",
-                     image: nil) {
-                debugPrint("Org now!")
+                     image: nil,
+                     backgroundColor: .buttonPrimary) {
+                viewModel.moveAllScreenshots()
             }
                      .padding()
             
@@ -44,6 +45,13 @@ struct DashboardView : View {
             Spacer()
         }
         .frame(width: 500, height: 600)
+        .alert(item: $viewModel.activeAlert) { alert in
+            Alert(
+                title: Text(alert.title),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK"))
+            )
+        }
        
     }
     

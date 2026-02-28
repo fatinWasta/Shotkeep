@@ -15,7 +15,7 @@ struct FolderSelectionView: View {
     let selectFolderAction: () -> Void
 
     var body: some View {
-        CardView(backgroundColor: .gray) {
+        CardView {
             VStack(alignment: .leading) {
                 HStack {
                     Image(systemName: "folder")
@@ -26,7 +26,7 @@ struct FolderSelectionView: View {
                 Text(subTitle)
                 
                 HStack {
-                    CardView(backgroundColor: .white) {
+                    CardView(backgroundColor: .buttonSecondary) {
                         HStack{
                             Text(selectedFolderPath)
                                 .foregroundColor(.gray)
@@ -38,7 +38,8 @@ struct FolderSelectionView: View {
                     SKButton(title: "Browse",
                              image: Image(systemName: "arrow.forward.folder.fill"),
                              width: 100,
-                             height: 40
+                             height: 40,
+                             backgroundColor: .buttonSecondary
                     ) {
                         selectFolderAction()
                     }

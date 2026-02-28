@@ -10,18 +10,21 @@ import Combine
 import AppKit
 import SwiftUI
 
+struct DashboardAlert: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+}
+
 final class DashboardViewModel: ObservableObject {
     @ObservedObject var config: AppConfigViewModel
+    @Published var activeAlert: DashboardAlert?
     
     @Published var isMonitoringEnabled: Bool = false {
         didSet {
             handleMonitoringChange()
         }
     }
-    
-    @Published private(set) var sourceScreenshots: [Screenshot] = []
-    @Published private(set) var sourceDirectory: URL?
-    @Published private(set) var destinationDirectory: URL?
     
     var monitoringStatusText: String {
         isMonitoringEnabled ? "Active" : "Inactive"
@@ -52,16 +55,21 @@ final class DashboardViewModel: ObservableObject {
         self.moveAllSSUseCase = moveAllSSUseCase
         self.watcher = watcher
         
-        sourceScreenshots = loadScreenshots(at: sourceDirectory)
+        //sourceScreenshots = loadScreenshots(at: config.sourceDirectory)
+        isMonitoringEnabled = UserDefaults.standard.bool(forKey: StringConstants.isMonitoringEnabledUDkey)
+        if isMonitoringEnabled {
+           
+        }
     }
     
     deinit {
         watcher.stopWatching()
     }
     
+    
     func handleMonitoringChange() {
-        debugPrint("handle monitor change")
-        guard let sourceDirectory else { return }
+        guard let sourceDirectory = config.sourceDirectory else { return }
+        UserDefaults.standard.set(isMonitoringEnabled, forKey: StringConstants.isMonitoringEnabledUDkey)
         isMonitoringEnabled ? startMonitoring(directory: sourceDirectory) : stopMonitoring()
     }
     
@@ -84,9 +92,23 @@ final class DashboardViewModel: ObservableObject {
         }
     }
     
-    func moveAllScreenshots(to destination: URL?) {
-        guard let destination else { return }
-        guard let source = sourceDirectory else { return }
+    func moveAllScreenshots() {
+        guard let source = config.sourceDirectory else {
+            activeAlert = DashboardAlert(
+                title: "Missing Source Folder",
+                message: "Please select a source folder first."
+            )
+            return
+        }
+        
+        guard let destination = config.destinationDirectory else {
+            activeAlert = DashboardAlert(
+                title: "Missing Destination Folder",
+                message: "Please select a destination folder first."
+            )
+            return
+        }
+        
         
         let didAccessSource = source.startAccessingSecurityScopedResource()
         let didAccessDestination = destination.startAccessingSecurityScopedResource()
@@ -97,15 +119,21 @@ final class DashboardViewModel: ObservableObject {
         }
         
         guard didAccessSource else {
-            debugPrint("No permission for source folder")
+            activeAlert = DashboardAlert(
+                title: "Permission Error",
+                message: "Unable to access selected folders."
+            )
             return
         }
         
         guard didAccessDestination else {
-            debugPrint("No permission for destination folder")
+            activeAlert = DashboardAlert(
+                title: "Permission Error",
+                message: "Unable to access selected folders."
+            )
             return
         }
-        
+        let sourceScreenshots = self.loadScreenshots(at: config.sourceDirectory)
         do {
             try moveAllSSUseCase.execute(
                 sourceScreenshots,
@@ -113,9 +141,17 @@ final class DashboardViewModel: ObservableObject {
                 to: destination
             )
             
-            updateSourceScreenshots()
+            activeAlert = DashboardAlert(
+                title: "Your Screenshots Are Safe!",
+                message: "All screenshots were moved successfully to ~/\(config.destinationFolderDisplayName)."
+            )
+            
             
         } catch {
+            activeAlert = DashboardAlert(
+                title: "Move Failed",
+                message: error.localizedDescription
+            )
             debugPrint("Error moving screenshots:", error)
         }
     }
@@ -125,16 +161,17 @@ final class DashboardViewModel: ObservableObject {
 
 private extension DashboardViewModel {
     
-    func updateSourceScreenshots() {
-        sourceScreenshots = self.loadScreenshots(at: self.sourceDirectory)
-    }
+//    func updateSourceScreenshots() {
+//        sourceScreenshots = self.loadScreenshots(at: config.sourceDirectory)
+//        debugPrint("Screenshot updated:\(sourceScreenshots.count)")
+//    }
     
     func startMonitoring(directory: URL) {
         debugPrint("Start Monitoring")
         watcher.startWatching(directory: directory) { [weak self] in
             guard let self else { return }
             debugPrint("watcher fired")
-           updateSourceScreenshots()
+            moveAllScreenshots()
         }
     }
     

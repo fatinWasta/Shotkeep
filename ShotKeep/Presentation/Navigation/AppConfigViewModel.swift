@@ -25,6 +25,10 @@ final class AppConfigViewModel: ObservableObject {
         sourceDirectory != nil && destinationDirectory != nil
     }
     
+    var shouldMonitor: Bool {
+        sourceDirectory != nil && destinationDirectory != nil
+    }
+    
     
     init() {
         restoreBookmarksIfAvailable()
