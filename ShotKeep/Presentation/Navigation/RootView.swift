@@ -58,6 +58,7 @@ struct RootView: View {
                 }
         }
         .toolbar(.hidden, for: .windowToolbar)
+        .background(.rootBackground)
     }
 }
 

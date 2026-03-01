@@ -15,7 +15,7 @@ struct FolderSelectionView: View {
     let selectFolderAction: () -> Void
 
     var body: some View {
-        CardView {
+        CardView(backgroundColor: .rootBackground) {
             VStack(alignment: .leading) {
                 HStack {
                     Image(systemName: "folder")

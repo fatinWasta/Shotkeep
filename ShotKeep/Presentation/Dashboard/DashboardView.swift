@@ -41,7 +41,7 @@ struct DashboardView : View {
             Divider()
                 .padding([.leading, .trailing])
             
-            LastRunView(atDate: viewModel.lastOrganizedText)
+            LastRunView(lastOrganizedText: viewModel.lastOrganizedText)
             
             Spacer()
         }
@@ -59,13 +59,11 @@ struct DashboardView : View {
 }
 
 struct LastRunView: View {
-    var atDate: String
+    var lastOrganizedText: String
     var body: some View {
         HStack {
-            Text("Last Organised,")
-                .font(.system(.subheadline,
-                              weight: .medium))
-            Text("\(atDate)")
+            
+            Text("\(lastOrganizedText)")
                 .font(.system(.subheadline,
                               weight: .medium))
             
@@ -74,6 +72,8 @@ struct LastRunView: View {
                 NSApplication.shared.terminate(nil)
             }) {
                 Image(systemName: "xmark.circle")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
             }
             .help("Quit")
         }
