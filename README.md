@@ -15,17 +15,6 @@ No clutter. No manual sorting. No dock icon.
 -   Automatically moves screenshots to a destination folder
 -   Organizes files by date
 -   Sends subtle macOS notifications
--   Runs quietly from the menu bar
-
-------------------------------------------------------------------------
-
-## 📁 Default Organization
-
-    ~/Pictures/Screenshots/
-        2026-02/
-            2026-02-28_14-32-10.png
-
-Simple. Predictable. Spotlight-friendly.
 
 ------------------------------------------------------------------------
 
