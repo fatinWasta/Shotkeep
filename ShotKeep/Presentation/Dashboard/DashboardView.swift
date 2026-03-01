@@ -73,7 +73,7 @@ struct LastRunView: View {
             }) {
                 Image(systemName: "xmark.circle")
                     .font(.largeTitle)
-                    .foregroundColor(.white)
+                    .foregroundColor(.textPrimary)
             }
             .help("Quit")
         }
@@ -179,7 +179,7 @@ struct TitleView: View {
                 }) {
                     Image(systemName: leadingImageName)
                         .font(.largeTitle)
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
                 }
                 .padding([.leading])
             }
@@ -188,12 +188,12 @@ struct TitleView: View {
                 Text(title)
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.textPrimary)
                 
                 Text(subTitle)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .foregroundColor(.textPrimary)
             }
             .padding()
             
@@ -205,7 +205,7 @@ struct TitleView: View {
                 }) {
                     Image(systemName: trailingImageName)
                         .font(.largeTitle)
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
                 }
                 .padding([.trailing])
             }
