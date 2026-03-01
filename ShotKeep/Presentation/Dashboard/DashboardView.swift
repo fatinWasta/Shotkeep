@@ -36,7 +36,8 @@ struct DashboardView : View {
             Divider()
                 .padding([.leading, .trailing])
             
-            SummeryView(totalOrganised: viewModel.destinationScreenshots.count)
+            SummeryView(totalOrganized: viewModel.destinationScreenshots.count,
+                        todayOrganized: viewModel.screenshotsCapturedToday)
             
             Divider()
                 .padding([.leading, .trailing])
@@ -83,7 +84,8 @@ struct LastRunView: View {
 
 //TODO: This needs to be updated once organizer logic is completed
 struct SummeryView: View {
-    var totalOrganised: Int
+    var totalOrganized: Int
+    var todayOrganized: Int
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -96,19 +98,21 @@ struct SummeryView: View {
                     VStack {
                         Text("Total Organized")
                         
-                        Text("\(totalOrganised)")
+                        Text("\(totalOrganized)")
                             .font(.system(size: 40, weight: .bold))
                     }
+                    .padding()
                     
                 }
                 
                 CardView(backgroundColor: .indigo) {
                     VStack{
-                        Text("This Week")
+                        Text("Today")
                         
-                        Text("43")
+                        Text("\(todayOrganized)")
                             .font(.system(size: 40, weight: .bold))
                     }
+                    .padding()
                     
                 }
                 Spacer()
