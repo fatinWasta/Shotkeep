@@ -51,6 +51,19 @@ final class DashboardViewModel: ObservableObject {
         return "Last organized \(formatter.localizedString(for: date, relativeTo: Date()))"
     }
     
+    var screenshotsCapturedToday: Int {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        guard let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: startOfToday) else {
+            return 0
+        }
+
+        return (sourceScreenshots + destinationScreenshots)
+            .filter { $0.createdAt >= startOfToday &&
+                      $0.createdAt < startOfTomorrow }
+            .count
+    }
+    
     private let bookmarkSourceUDKey = "shotkeep.source.bookmark"
     private let bookmarkDestinationUDKey = "shotkeep.destination.bookmark"
     
