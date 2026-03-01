@@ -81,3 +81,9 @@ ShotKeep exists to remove friction --- nothing more.
 -   macOS 13+
 -   Xcode 15+
 -   Swift 5.9+
+
+------------------------------------------------------------------------
+
+## 📞 Support
+
+Report bugs or feature requests on the **Issues** tab.
